@@ -97,8 +97,13 @@ const firebaseConfig = {
 
 <script>
 'use strict';
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+let db = null;
+try {
+  if (typeof firebase !== 'undefined') {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+  }
+} catch(e) { console.warn('Firebase 초기화 실패:', e); }
 let siteData = null, navPath = [];
 
 function showErr(msg){
@@ -175,10 +180,14 @@ document.getElementById('back-btn').onclick=()=>{navPath=navPath.slice(0,-1);ren
 
 // 실시간 구독 (관리자가 수정하면 자동 반영)
 function init(){
+  if(!db){
+    showErr('Firebase 연결 실패.<br>광고차단기를 끄거나 Chrome에서 접속해보세요.');
+    return;
+  }
   trackVisit();
   db.collection('site').doc('config').onSnapshot(snap=>{
     if(!snap.exists){
-      showErr('사이트가 아직 설정되지 않았어요.<br>관리자에게 문의하거나 <a href="admin.html">관리자 페이지</a>에서 설정해주세요.');
+      showErr('사이트가 아직 준비 중이에요.<br>잠시 후 다시 접속해주세요.');
       return;
     }
     siteData=snap.data();
