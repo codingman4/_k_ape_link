@@ -8,17 +8,13 @@
   <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans KR',sans-serif;background:#0d0d14;color:#f1f0ff}
-
-  /* 로딩 */
   .load-screen{position:fixed;inset:0;background:#0d0d14;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;z-index:999}
   .spinner{width:40px;height:40px;border-radius:50%;border:3px solid rgba(167,139,250,.2);border-top-color:#a78bfa;animation:spin .8s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
   .load-txt{font-size:13px;color:#64748b}
-
-  /* 로그인 */
   .login-wrap{position:fixed;inset:0;background:#0d0d14;background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(120,80,255,.22) 0%,transparent 70%);display:none;align-items:center;justify-content:center;padding:20px}
   .login-box{background:#16161f;border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:40px 32px;width:100%;max-width:360px;box-shadow:0 24px 64px rgba(0,0,0,.6);text-align:center}
-  .login-ico{font-size:52px;margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(167,139,250,.4))}
+  .login-ico{font-size:52px;margin-bottom:16px}
   .login-title{font-size:22px;font-weight:800;margin-bottom:6px}
   .login-sub{font-size:13px;color:#64748b;margin-bottom:28px}
   .mi{width:100%;padding:13px 16px;border:1.5px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.06);color:#f1f0ff;font-size:14px;outline:none;margin-bottom:10px;display:block}
@@ -26,12 +22,8 @@
   .mi::placeholder{color:rgba(255,255,255,.3)}
   .btn-primary{width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:filter .2s;margin-top:4px}
   .btn-primary:hover{filter:brightness(1.1)}
-  .merr{color:#f87171;font-size:13px;margin-bottom:10px;min-height:18px}
-
-  /* 대시보드 레이아웃 */
+  .merr{color:#f87171;font-size:13px;margin-top:10px;line-height:1.5;min-height:18px}
   .dashboard{display:none;flex-direction:column;min-height:100vh}
-
-  /* 상단 바 */
   .topbar{background:rgba(15,15,25,.95);border-bottom:1px solid rgba(255,255,255,.08);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
   .topbar-title{font-size:16px;font-weight:800;color:#c4b5fd}
   .topbar-right{display:flex;gap:8px}
@@ -40,48 +32,31 @@
   .tbtn.pw:hover{background:rgba(167,139,250,.22)}
   .tbtn.logout{background:rgba(255,255,255,.07);color:#94a3b8;border:1px solid rgba(255,255,255,.1)}
   .tbtn.logout:hover{background:rgba(255,255,255,.14);color:#fff}
-
-  /* 탭 바 */
   .tab-bar{display:flex;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08);padding:0 20px}
   .tab{padding:14px 20px;border:none;background:none;color:#64748b;font-size:14px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;margin-bottom:-1px}
   .tab.active{color:#a78bfa;border-bottom-color:#a78bfa}
   .tab:hover:not(.active){color:#94a3b8}
-
-  /* 콘텐츠 영역 */
   .tab-content{display:none;padding:24px 20px;max-width:540px;margin:0 auto;width:100%}
   .tab-content.active{display:block}
-
-  /* 섹션 */
   .section{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:20px;margin-bottom:16px}
   .section-title{font-size:13px;font-weight:700;color:#94a3b8;margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px}
-
-  /* 프로필 */
   .prof-row{display:flex;align-items:center;gap:14px}
-  .prof-emoji{font-size:40px;cursor:pointer;transition:transform .2s}
-  .prof-emoji:hover{transform:scale(1.1)}
+  .prof-emoji{font-size:40px}
   .prof-info{flex:1}
   .prof-name{font-size:17px;font-weight:700;color:#f1f0ff}
   .prof-bio{font-size:13px;color:#94a3b8;margin-top:4px}
-  .prof-edit-btn{background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.3);color:#a78bfa;padding:6px 14px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
-  .prof-edit-btn:hover{background:rgba(167,139,250,.22)}
-
-  /* 관리 버튼 행 */
+  .prof-edit-btn{background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.3);color:#a78bfa;padding:6px 14px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer}
   .action-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-  .abtn{padding:9px 16px;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+  .abtn{padding:9px 16px;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:filter .15s}
   .abtn.folder{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff}
   .abtn.link{background:linear-gradient(135deg,#059669,#34d399);color:#fff}
   .abtn:hover{filter:brightness(1.1)}
-
-  /* 내비게이션 */
   .bc-bar{display:flex;align-items:center;flex-wrap:wrap;gap:4px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;margin-bottom:10px}
   .bc{color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;transition:color .15s}
   .bc:hover{color:#a78bfa}
   .bc.cur{color:#c4b5fd;font-weight:700;cursor:default}
   .bc-sep{color:rgba(255,255,255,.25);font-size:12px}
-  .back-btn{display:inline-flex;align-items:center;gap:8px;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.25);color:#a78bfa;padding:8px 14px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;margin-bottom:12px;transition:all .2s}
-  .back-btn:hover{background:rgba(167,139,250,.22)}
-
-  /* 아이템 목록 */
+  .back-btn{display:inline-flex;align-items:center;gap:8px;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.25);color:#a78bfa;padding:8px 14px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;margin-bottom:12px}
   .items{display:flex;flex-direction:column;gap:8px}
   .irow{display:flex;gap:8px;align-items:stretch}
   .card{flex:1;display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 16px;color:#fff;transition:all .2s;position:relative;overflow:hidden;text-align:left}
@@ -91,15 +66,11 @@
   .c-url{font-size:11px;color:#64748b;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
   .c-arr{font-size:18px;color:rgba(255,255,255,.4);position:relative;z-index:1}
   .c-tag{font-size:11px;background:rgba(52,211,153,.15);color:#34d399;border:1px solid rgba(52,211,153,.25);border-radius:6px;padding:2px 8px;flex-shrink:0;position:relative;z-index:1}
-
-  /* 컨트롤 버튼 */
   .ctrl-col{display:flex;flex-direction:column;gap:4px;justify-content:center}
   .cbtn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#94a3b8;cursor:pointer;font-size:13px;transition:all .15s}
   .cbtn:hover{background:rgba(255,255,255,.14);color:#fff}
   .cbtn.del{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.25);color:#f87171}
   .cbtn.del:hover{background:rgba(239,68,68,.25)}
-
-  /* 인라인 수정 */
   .ecrd{flex:1;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.3);border-radius:14px;padding:12px 14px}
   .ei{width:100%;padding:9px 12px;border:1.5px solid rgba(255,255,255,.12);border-radius:10px;background:rgba(255,255,255,.07);color:#f1f0ff;font-size:13px;outline:none;margin-bottom:8px;display:block}
   .ei:focus{border-color:rgba(167,139,250,.6)}
@@ -108,25 +79,17 @@
   .ebtn{flex:1;padding:9px;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer}
   .ebtn.ok{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff}
   .ebtn.cancel{background:rgba(255,255,255,.08);color:#94a3b8}
-
   .empty{text-align:center;color:rgba(255,255,255,.3);padding:40px 0;font-size:14px}
-
-  /* 통계 */
   .stat-card{background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.3);border-radius:20px;padding:24px;margin-bottom:20px;text-align:center}
   .stat-label{font-size:13px;color:#94a3b8;margin-bottom:8px}
   .stat-value{font-size:52px;font-weight:900;color:#a78bfa;line-height:1}
   .stat-hint{font-size:11px;color:#4b5563;margin-top:8px}
-
   .an-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
   .an-title{font-size:14px;font-weight:700;color:#e2e8f0}
-  .reset-btn{background:none;border:1px solid rgba(239,68,68,.3);color:#f87171;padding:5px 14px;border-radius:20px;font-size:11px;cursor:pointer;transition:all .2s}
-  .reset-btn:hover{background:rgba(239,68,68,.1)}
-
+  .reset-btn{background:none;border:1px solid rgba(239,68,68,.3);color:#f87171;padding:5px 14px;border-radius:20px;font-size:11px;cursor:pointer}
   .depth-tabs{display:flex;gap:6px;margin-bottom:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:4px}
   .dtab{flex:1;padding:7px;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;color:#4b5563;background:none;transition:all .2s}
   .dtab.active{background:rgba(167,139,250,.2);color:#c4b5fd}
-  .dtab:hover:not(.active){color:#94a3b8;background:rgba(255,255,255,.05)}
-
   .chart-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px}
   .bar-row{display:grid;grid-template-columns:minmax(80px,38%) 1fr 36px;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
   .bar-row:last-child{border-bottom:none}
@@ -137,13 +100,8 @@
   .bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#7c3aed,#a78bfa);width:0%;transition:width .4s cubic-bezier(.4,0,.2,1)}
   .bar-count{font-size:13px;font-weight:700;color:#c4b5fd;text-align:right}
   .no-data{text-align:center;color:rgba(255,255,255,.25);padding:36px 0;font-size:13px;line-height:1.7}
-  .an-loading{text-align:center;color:#64748b;padding:24px;font-size:13px}
-
-  /* 토스트 */
-  .toast{position:fixed;bottom:24px;right:24px;color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;font-weight:600;backdrop-filter:blur(8px);pointer-events:none;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(6px);z-index:500}
+  .toast{position:fixed;bottom:24px;right:24px;color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;font-weight:600;pointer-events:none;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(6px);z-index:500}
   .toast.show{opacity:1;transform:translateY(0)}
-
-  /* 오버레이 모달 */
   .overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:300;padding:20px;backdrop-filter:blur(6px)}
   .overlay.hidden{display:none}
   .modal{background:#16161f;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;width:100%;max-width:380px;box-shadow:0 24px 64px rgba(0,0,0,.6)}
@@ -152,7 +110,6 @@
   .mbtn.ok{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff}
   .mbtn.ok:hover{filter:brightness(1.1)}
   .mbtn.cancel{background:rgba(255,255,255,.07);color:#94a3b8;border:1px solid rgba(255,255,255,.1)}
-  .mbtn.cancel:hover{background:rgba(255,255,255,.12)}
   .mrow{display:flex;gap:8px;margin-top:4px}
   .merr-modal{color:#f87171;font-size:13px;margin-bottom:10px;min-height:0}
   .mhint{font-size:12px;color:#64748b;margin-bottom:12px;line-height:1.5}
@@ -160,42 +117,34 @@
 </head>
 <body>
 
-<!-- ════════════════════════════════════════
-     🔧 Firebase 설정 (index.html과 동일하게)
-════════════════════════════════════════ -->
 <script>
 const firebaseConfig = {
-  apiKey:            "AIzaSyDDhxlDbuLeH2Xnu1rui6ZThReFg0s9M6w",
-  authDomain:        "k-ape-99b00.firebaseapp.com",
-  projectId:         "k-ape-99b00",
-  storageBucket:     "k-ape-99b00.firebasestorage.app",
-  messagingSenderId: "889115108406",
-  appId:             "1:889115108406:web:546f5f5f4c2e6bd873a497"
+  apiKey:            "여기에_붙여넣기",
+  authDomain:        "여기에_붙여넣기",
+  projectId:         "여기에_붙여넣기",
+  storageBucket:     "여기에_붙여넣기",
+  messagingSenderId: "여기에_붙여넣기",
+  appId:             "여기에_붙여넣기"
 };
-
-// 기본 관리자 비밀번호 (변경 후 localStorage에 저장됨)
 const ADMIN_PW_DEFAULT = "admin1234";
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-<!-- 로딩 -->
 <div class="load-screen" id="ls"><div class="spinner"></div><div class="load-txt">연결 중…</div></div>
 
-<!-- 로그인 -->
 <div class="login-wrap" id="login-wrap">
   <div class="login-box">
     <div class="login-ico">🛠</div>
     <div class="login-title">관리자 로그인</div>
     <div class="login-sub">비밀번호를 입력해주세요</div>
     <input class="mi" id="pw-input" type="password" placeholder="비밀번호"/>
-    <div class="merr" id="pw-err"></div>
     <button class="btn-primary" id="login-btn">로그인</button>
+    <div class="merr" id="pw-err"></div>
   </div>
 </div>
 
-<!-- 대시보드 -->
 <div class="dashboard" id="dashboard">
   <div class="topbar">
     <div class="topbar-title">🛠 관리자 대시보드</div>
@@ -204,19 +153,15 @@ const ADMIN_PW_DEFAULT = "admin1234";
       <button class="tbtn logout" id="logout-btn">로그아웃</button>
     </div>
   </div>
-
   <div class="tab-bar">
     <button class="tab active" data-tab="links">🔗 링크 관리</button>
     <button class="tab"        data-tab="analytics">📊 통계</button>
   </div>
-
-  <!-- 링크 관리 탭 -->
   <div class="tab-content active" id="tab-links">
-    <!-- 프로필 -->
     <div class="section">
       <div class="section-title">프로필</div>
       <div class="prof-row">
-        <span class="prof-emoji" id="prof-emoji" title="클릭해서 수정"></span>
+        <span class="prof-emoji" id="prof-emoji"></span>
         <div class="prof-info">
           <div class="prof-name" id="prof-name"></div>
           <div class="prof-bio"  id="prof-bio"></div>
@@ -224,8 +169,6 @@ const ADMIN_PW_DEFAULT = "admin1234";
         <button class="prof-edit-btn" id="prof-edit-btn">✏️ 수정</button>
       </div>
     </div>
-
-    <!-- 링크 목록 -->
     <div class="section">
       <div class="section-title" id="loc-title">링크 목록 · 홈</div>
       <div class="action-row">
@@ -237,8 +180,6 @@ const ADMIN_PW_DEFAULT = "admin1234";
       <div class="items" id="items"></div>
     </div>
   </div>
-
-  <!-- 통계 탭 -->
   <div class="tab-content" id="tab-analytics">
     <div class="stat-card">
       <div class="stat-label">👥 총 방문자 수</div>
@@ -251,15 +192,13 @@ const ADMIN_PW_DEFAULT = "admin1234";
         <button class="reset-btn" id="analytics-reset">🗑 초기화</button>
       </div>
       <div class="depth-tabs" id="depth-tabs"></div>
-      <div class="chart-box"><div id="analytics-chart"><div class="an-loading">로딩 중…</div></div></div>
+      <div class="chart-box"><div id="analytics-chart"><div class="no-data">로딩 중…</div></div></div>
     </div>
   </div>
 </div>
 
-<!-- 토스트 -->
 <div class="toast" id="toast"></div>
 
-<!-- 비밀번호 변경 모달 -->
 <div class="overlay hidden" id="pw-modal">
   <div class="modal">
     <h3>🔑 비밀번호 변경</h3>
@@ -267,7 +206,7 @@ const ADMIN_PW_DEFAULT = "admin1234";
     <input class="mi" id="pw-new" type="password" placeholder="새 비밀번호 (4자 이상)"/>
     <input class="mi" id="pw-con" type="password" placeholder="새 비밀번호 확인"/>
     <div class="merr-modal" id="pw-modal-err"></div>
-    <p class="mhint">⚠️ 비밀번호는 이 브라우저에 저장돼요. 브라우저 데이터 초기화 시 기본 비밀번호로 돌아가요.</p>
+    <p class="mhint">⚠️ 비밀번호는 이 브라우저에 저장돼요.</p>
     <div class="mrow">
       <button class="mbtn ok"     id="pw-modal-ok">변경하기</button>
       <button class="mbtn cancel" id="pw-modal-cancel">취소</button>
@@ -275,7 +214,6 @@ const ADMIN_PW_DEFAULT = "admin1234";
   </div>
 </div>
 
-<!-- 프로필 수정 모달 -->
 <div class="overlay hidden" id="prof-modal">
   <div class="modal">
     <h3>👤 프로필 수정</h3>
@@ -289,7 +227,6 @@ const ADMIN_PW_DEFAULT = "admin1234";
   </div>
 </div>
 
-<!-- 항목 추가 모달 -->
 <div class="overlay hidden" id="add-modal">
   <div class="modal">
     <h3 id="add-modal-title">추가</h3>
@@ -305,57 +242,60 @@ const ADMIN_PW_DEFAULT = "admin1234";
 
 <script>
 'use strict';
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
 
-// ── 상태 ──────────────────────────────────────────
-let appData = null;   // { profile, items } from Firestore
+// ── Firebase 초기화 (실패해도 앱이 멈추지 않도록) ──
+let db = null;
+try {
+  if (typeof firebase !== 'undefined') {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+  }
+} catch(e) {
+  console.error('Firebase 초기화 실패:', e);
+}
+
+// ── 상태 ──
+let appData = null;
 let navPath = [];
 let editId  = null;
 let addType = null;
 let analyticsDepth = 1;
 let analyticsData  = null;
 
-// ── 비밀번호 ──────────────────────────────────────
 function getCurrentPw(){ return localStorage.getItem('mylinks_pw') || ADMIN_PW_DEFAULT; }
-
-// ── 유틸 ──────────────────────────────────────────
 function uid(){ return 'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,5); }
-function showToast(msg,bg='rgba(5,150,105,.9)'){
+
+function showToast(msg, bg){
   const t=document.getElementById('toast');
-  t.textContent=msg; t.style.background=bg;
+  t.textContent=msg; t.style.background=bg||'rgba(5,150,105,.9)';
   t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1900);
 }
 function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
 function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
 
-// ── Firebase 저장 ─────────────────────────────────
+// ── Firebase 저장 ──
 async function saveToFirebase(){
+  if(!db){ showToast('Firebase 연결 없음','rgba(239,68,68,.9)'); return; }
   showToast('저장 중…','rgba(124,58,237,.9)');
   try{
-    await db.collection('site').doc('config').set({
-      profile: appData.profile,
-      items:   appData.items
-    });
+    await db.collection('site').doc('config').set({ profile:appData.profile, items:appData.items });
     showToast('✓ 저장됨 (방문자 페이지에 즉시 반영)');
-  }catch(e){
-    showToast('❌ 저장 실패: '+e.message,'rgba(239,68,68,.9)');
-  }
+  }catch(e){ showToast('❌ 저장 실패: '+e.message,'rgba(239,68,68,.9)'); }
 }
 
-// ── 아이템 헬퍼 ──────────────────────────────────
+// ── 아이템 헬퍼 ──
 function getAt(){
   let items=appData?.items||[];
-  for(const p of navPath){const f=items.find(i=>i.id===p.id); items=f?.children||[];}
+  for(const p of navPath){const f=items.find(i=>i.id===p.id);items=f?.children||[];}
   return items;
 }
 function setAt(newItems){
-  if(!navPath.length){ appData.items=newItems; saveToFirebase(); renderLinks(); return; }
+  if(!navPath.length){appData.items=newItems;saveToFirebase();renderLinks();return;}
   function upd(items,stk){
     const[h,...r]=stk;
     return items.map(i=>{
-      if(i.id!==h.id) return i;
-      if(!r.length) return{...i,children:newItems};
+      if(i.id!==h.id)return i;
+      if(!r.length)return{...i,children:newItems};
       return{...i,children:upd(i.children||[],r)};
     });
   }
@@ -363,22 +303,31 @@ function setAt(newItems){
   saveToFirebase(); renderLinks();
 }
 function moveItem(id,dir){
-  const cur=getAt(); const idx=cur.findIndex(i=>i.id===id);
-  if(dir==='u'&&idx===0||dir==='d'&&idx===cur.length-1) return;
+  const cur=getAt(),idx=cur.findIndex(i=>i.id===id);
+  if(dir==='u'&&idx===0||dir==='d'&&idx===cur.length-1)return;
   const a=[...cur],si=dir==='u'?idx-1:idx+1;
   [a[idx],a[si]]=[a[si],a[idx]]; setAt(a);
 }
 function deleteItem(id){
-  if(!confirm('삭제할까요?\n폴더는 안의 내용도 모두 삭제됩니다.')) return;
+  if(!confirm('삭제할까요?\n폴더는 안의 내용도 모두 삭제됩니다.'))return;
   setAt(getAt().filter(i=>i.id!==id));
 }
 
-// ── 초기화 ───────────────────────────────────────
+// ── 초기화 ──
 async function init(){
+  if(!db){
+    // Firebase 없이도 기본 데이터로 동작
+    appData={ profile:{name:'홍길동',bio:'안녕하세요!',emoji:'🌟'}, items:[] };
+    document.getElementById('ls').style.display='none';
+    document.getElementById('login-wrap').style.display='flex';
+    document.getElementById('pw-err').textContent='⚠️ Firebase 연결 실패. 광고차단기를 끄고 새로고침해주세요.';
+    setTimeout(()=>document.getElementById('pw-input').focus(),200);
+    return;
+  }
   try{
     const doc=await db.collection('site').doc('config').get();
-    if(doc.exists){ appData=doc.data(); if(!appData.items) appData.items=[]; }
-    else { appData={ profile:{name:'홍길동',bio:'안녕하세요!',emoji:'🌟'}, items:[] }; }
+    appData = doc.exists ? doc.data() : { profile:{name:'홍길동',bio:'안녕하세요!',emoji:'🌟'}, items:[] };
+    if(!appData.items) appData.items=[];
   }catch(e){
     appData={ profile:{name:'홍길동',bio:'안녕하세요!',emoji:'🌟'}, items:[] };
   }
@@ -387,7 +336,7 @@ async function init(){
   setTimeout(()=>document.getElementById('pw-input').focus(),200);
 }
 
-// ── 로그인 ───────────────────────────────────────
+// ── 로그인 ──
 function doLogin(){
   const val=document.getElementById('pw-input').value;
   if(val===getCurrentPw()){
@@ -399,38 +348,36 @@ function doLogin(){
   }
 }
 
-// ── 링크 관리 렌더 ───────────────────────────────
+// ── 렌더 ──
 function renderLinks(){
   if(!appData)return;
   renderBc();
   const cur=getAt();
   document.getElementById('back-btn').style.display=navPath.length?'inline-flex':'none';
   document.getElementById('loc-title').textContent='링크 목록 · '+(navPath.length?navPath[navPath.length-1].title:'홈');
-
   const cont=document.getElementById('items'); cont.innerHTML='';
   if(!cur.length){
     const e=document.createElement('div');e.className='empty';
     e.textContent='📂 위에서 폴더나 링크를 추가해보세요!';
-    cont.appendChild(e); return;
+    cont.appendChild(e);return;
   }
-
   cur.forEach(item=>{
-    const row=document.createElement('div'); row.className='irow';
+    const row=document.createElement('div');row.className='irow';
     if(editId===item.id){
-      const ecrd=document.createElement('div'); ecrd.className='ecrd';
-      const ti=document.createElement('input'); ti.className='ei'; ti.value=item.title; ti.placeholder='제목';
-      const brow=document.createElement('div'); brow.className='ebtn-row';
+      const ecrd=document.createElement('div');ecrd.className='ecrd';
+      const ti=document.createElement('input');ti.className='ei';ti.value=item.title;ti.placeholder='제목';
+      const brow=document.createElement('div');brow.className='ebtn-row';
       if(item.type==='link'){
-        const ui=document.createElement('input'); ui.className='ei'; ui.value=item.url||''; ui.placeholder='URL';
+        const ui=document.createElement('input');ui.className='ei';ui.value=item.url||'';ui.placeholder='URL';
         const ok=mkbtn('ebtn ok','저장',()=>{setAt(getAt().map(i=>i.id!==item.id?i:{...i,title:ti.value.trim(),url:ui.value.trim()}));editId=null;});
         const cl=mkbtn('ebtn cancel','취소',()=>{editId=null;renderLinks();});
-        ecrd.appendChild(ti); ecrd.appendChild(ui); brow.appendChild(ok); brow.appendChild(cl);
+        ecrd.appendChild(ti);ecrd.appendChild(ui);brow.appendChild(ok);brow.appendChild(cl);
       }else{
         const ok=mkbtn('ebtn ok','저장',()=>{setAt(getAt().map(i=>i.id!==item.id?i:{...i,title:ti.value.trim()}));editId=null;});
         const cl=mkbtn('ebtn cancel','취소',()=>{editId=null;renderLinks();});
-        ecrd.appendChild(ti); brow.appendChild(ok); brow.appendChild(cl);
+        ecrd.appendChild(ti);brow.appendChild(ok);brow.appendChild(cl);
       }
-      ecrd.appendChild(brow); row.appendChild(ecrd);
+      ecrd.appendChild(brow);row.appendChild(ecrd);
     }else{
       const card=document.createElement('div');
       card.className='card'+(item.type==='link'?' lk':'');
@@ -439,9 +386,7 @@ function renderLinks(){
       const tWrap=document.createElement('div');tWrap.style.flex='1';tWrap.style.minWidth='0';
       const tt=document.createElement('span');tt.className='c-title';tt.textContent=item.title;
       tWrap.appendChild(tt);
-      if(item.type==='link'&&item.url){
-        const ul=document.createElement('div');ul.className='c-url';ul.textContent=item.url;tWrap.appendChild(ul);
-      }
+      if(item.type==='link'&&item.url){const ul=document.createElement('div');ul.className='c-url';ul.textContent=item.url;tWrap.appendChild(ul);}
       card.appendChild(icon);card.appendChild(tWrap);
       if(item.type==='folder'){const a=document.createElement('span');a.className='c-arr';a.textContent='›';card.appendChild(a);}
       else{const t=document.createElement('span');t.className='c-tag';t.textContent='링크';card.appendChild(t);}
@@ -461,7 +406,7 @@ function renderBc(){
   const crumbs=[{label:'🏠 홈',n:0},...navPath.map((x,i)=>({label:x.title,n:i+1}))];
   const bar=document.getElementById('bc-bar');
   if(!navPath.length){bar.style.display='none';return;}
-  bar.style.display='flex'; bar.innerHTML='';
+  bar.style.display='flex';bar.innerHTML='';
   crumbs.forEach((c,i)=>{
     if(i>0){const s=document.createElement('span');s.className='bc-sep';s.textContent='›';bar.appendChild(s);}
     const el=document.createElement('span');
@@ -482,45 +427,42 @@ function renderProfile(){
 function mkbtn(cls,txt,fn){const b=document.createElement('button');b.className=cls;b.textContent=txt;b.onclick=fn;return b;}
 function mkctrl(txt,extra,fn){const b=document.createElement('button');b.className='cbtn'+extra;b.textContent=txt;b.onclick=fn;return b;}
 
-// ── 통계 ──────────────────────────────────────────
+// ── 통계 ──
 async function loadAnalytics(){
+  if(!db){document.getElementById('visitor-count').textContent='연결 없음';return;}
   document.getElementById('visitor-count').textContent='로딩 중…';
-  document.getElementById('analytics-chart').innerHTML='<div class="an-loading">로딩 중…</div>';
+  document.getElementById('analytics-chart').innerHTML='<div class="no-data">로딩 중…</div>';
   try{
     const[sumSnap,clickSnap]=await Promise.all([
       db.collection('analytics').doc('summary').get(),
       db.collection('analytics').doc('clicks').get()
     ]);
-    const visitors=sumSnap.data()?.visitors||0;
-    document.getElementById('visitor-count').textContent=visitors.toLocaleString();
+    document.getElementById('visitor-count').textContent=(sumSnap.data()?.visitors||0).toLocaleString();
     analyticsData=clickSnap.data()||{};
     renderDepthTabs();
   }catch(e){
     document.getElementById('visitor-count').textContent='오류';
-    document.getElementById('analytics-chart').innerHTML='<div class="no-data">Firebase 연결 오류: '+e.message+'</div>';
+    document.getElementById('analytics-chart').innerHTML='<div class="no-data">Firebase 오류: '+e.message+'</div>';
   }
 }
 
 function getMaxDepth(){
-  if(!analyticsData) return 1;
+  if(!analyticsData)return 1;
   let max=1;
-  for(const d of Object.values(analyticsData)){
-    const depth=(d.pathLabels||[d.title]).length;
-    if(depth>max) max=depth;
-  }
+  for(const d of Object.values(analyticsData)){const depth=(d.pathLabels||[d.title]).length;if(depth>max)max=depth;}
   return max;
 }
 
 function getGroupedData(depth){
-  if(!analyticsData) return[];
+  if(!analyticsData)return[];
   const groups={};
   for(const data of Object.values(analyticsData)){
     const pl=data.pathLabels||[data.title];
-    if(pl.length<depth) continue;
+    if(pl.length<depth)continue;
     const key=pl.slice(0,depth).join('\x00');
     const label=pl[depth-1];
     const sub=depth>1?pl.slice(0,depth-1).join(' › '):null;
-    if(!groups[key]) groups[key]={label,sub,count:0};
+    if(!groups[key])groups[key]={label,sub,count:0};
     groups[key].count+=data.count||0;
   }
   return Object.values(groups).sort((a,b)=>b.count-a.count);
@@ -542,7 +484,7 @@ function renderDepthTabs(){
     };
     tabsEl.appendChild(btn);
   }
-  if(analyticsDepth>maxD) analyticsDepth=1;
+  if(analyticsDepth>maxD)analyticsDepth=1;
   renderChart(analyticsDepth);
 }
 
@@ -553,31 +495,32 @@ function renderChart(depth){
   if(!data.length){
     const nd=document.createElement('div');nd.className='no-data';
     nd.innerHTML='아직 클릭 데이터가 없어요.<br>방문자가 링크를 클릭하면 여기에 집계돼요!';
-    cont.appendChild(nd); return;
+    cont.appendChild(nd);return;
   }
   const maxCount=Math.max(...data.map(d=>d.count),1);
   data.forEach(item=>{
     const pct=Math.round(item.count/maxCount*100);
-    const row=document.createElement('div'); row.className='bar-row';
-    const lw=document.createElement('div'); lw.className='bar-label-wrap';
-    const nm=document.createElement('span'); nm.className='bar-name'; nm.textContent=item.label; nm.title=item.label;
+    const row=document.createElement('div');row.className='bar-row';
+    const lw=document.createElement('div');lw.className='bar-label-wrap';
+    const nm=document.createElement('span');nm.className='bar-name';nm.textContent=item.label;nm.title=item.label;
     lw.appendChild(nm);
     if(item.sub){const sub=document.createElement('span');sub.className='bar-sub';sub.textContent=item.sub;lw.appendChild(sub);}
-    const track=document.createElement('div'); track.className='bar-track';
-    const fill=document.createElement('div'); fill.className='bar-fill'; fill.style.width='0%';
+    const track=document.createElement('div');track.className='bar-track';
+    const fill=document.createElement('div');fill.className='bar-fill';fill.style.width='0%';
     track.appendChild(fill);
-    const cnt=document.createElement('span'); cnt.className='bar-count'; cnt.textContent=item.count;
-    row.appendChild(lw); row.appendChild(track); row.appendChild(cnt);
+    const cnt=document.createElement('span');cnt.className='bar-count';cnt.textContent=item.count;
+    row.appendChild(lw);row.appendChild(track);row.appendChild(cnt);
     cont.appendChild(row);
     requestAnimationFrame(()=>setTimeout(()=>{fill.style.width=pct+'%';},30));
   });
 }
 
-// ── 이벤트 바인딩 ─────────────────────────────────
+// ── 이벤트 바인딩 ──
 document.addEventListener('DOMContentLoaded',()=>{
+
   // 로그인
   document.getElementById('login-btn').onclick=doLogin;
-  document.getElementById('pw-input').onkeydown=e=>e.key==='Enter'&&doLogin();
+  document.getElementById('pw-input').onkeydown=e=>{if(e.key==='Enter')doLogin();};
 
   // 로그아웃
   document.getElementById('logout-btn').onclick=()=>{
@@ -594,7 +537,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
       tab.classList.add('active');
       document.getElementById('tab-'+tab.dataset.tab).classList.add('active');
-      if(tab.dataset.tab==='analytics') loadAnalytics();
+      if(tab.dataset.tab==='analytics')loadAnalytics();
     };
   });
 
@@ -620,7 +563,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('pw-modal-ok').onclick=doChangePw;
   document.getElementById('pw-modal-cancel').onclick=()=>closeModal('pw-modal');
   document.getElementById('pw-modal').onclick=e=>{if(e.target===e.currentTarget)closeModal('pw-modal');};
-  document.getElementById('pw-con').onkeydown=e=>e.key==='Enter'&&doChangePw();
+  document.getElementById('pw-con').onkeydown=e=>{if(e.key==='Enter')doChangePw();};
 
   // 프로필 수정
   document.getElementById('prof-edit-btn').onclick=()=>{
@@ -644,7 +587,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('prof-cancel').onclick=()=>closeModal('prof-modal');
   document.getElementById('prof-modal').onclick=e=>{if(e.target===e.currentTarget)closeModal('prof-modal');};
 
-  // 폴더 추가
+  // 폴더/링크 추가
   document.getElementById('add-folder-btn').onclick=()=>{
     addType='folder';
     document.getElementById('add-modal-title').textContent='📁 폴더 추가';
@@ -653,8 +596,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     openModal('add-modal');
     setTimeout(()=>document.getElementById('add-name').focus(),100);
   };
-
-  // 링크 추가
   document.getElementById('add-link-btn').onclick=()=>{
     addType='link';
     document.getElementById('add-modal-title').textContent='🔗 링크 추가';
@@ -664,11 +605,10 @@ document.addEventListener('DOMContentLoaded',()=>{
     openModal('add-modal');
     setTimeout(()=>document.getElementById('add-name').focus(),100);
   };
-
   const doAdd=()=>{
     const name=document.getElementById('add-name').value.trim();
     const url=document.getElementById('add-url').value.trim();
-    if(!name) return;
+    if(!name)return;
     const it=addType==='folder'
       ?{id:uid(),type:'folder',title:name,children:[]}
       :{id:uid(),type:'link',title:name,url};
@@ -678,14 +618,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('add-ok').onclick=doAdd;
   document.getElementById('add-cancel').onclick=()=>closeModal('add-modal');
   document.getElementById('add-modal').onclick=e=>{if(e.target===e.currentTarget)closeModal('add-modal');};
-  document.getElementById('add-url').onkeydown=e=>e.key==='Enter'&&doAdd();
+  document.getElementById('add-url').onkeydown=e=>{if(e.key==='Enter')doAdd();};
 
   // 뒤로 가기
   document.getElementById('back-btn').onclick=()=>{navPath=navPath.slice(0,-1);editId=null;renderLinks();};
 
   // 통계 초기화
   document.getElementById('analytics-reset').onclick=async()=>{
-    if(!confirm('방문자 수와 클릭 통계를 모두 초기화할까요?')) return;
+    if(!confirm('방문자 수와 클릭 통계를 모두 초기화할까요?'))return;
+    if(!db){showToast('Firebase 연결 없음','rgba(239,68,68,.9)');return;}
     try{
       await db.collection('analytics').doc('summary').set({visitors:0});
       await db.collection('analytics').doc('clicks').set({});
@@ -696,6 +637,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     }catch(e){showToast('❌ 초기화 실패','rgba(239,68,68,.9)');}
   };
 
+  // 앱 시작
   init();
 });
 </script>
