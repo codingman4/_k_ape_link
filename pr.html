@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+  <meta name="theme-color" content="#0d0d14"/>
+  <title>관리자 대시보드</title>
+  <style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans KR',sans-serif;background:#0d0d14;color:#f1f0ff}
+  /* 로그인 - 처음부터 보임 */
+  .login-wrap{position:fixed;inset:0;background:#0d0d14;background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(120,80,255,.22) 0%,transparent 70%);display:flex;align-items:center;justify-content:center;padding:20px}
+  .login-box{background:#16161f;border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:40px 32px;width:100%;max-width:360px;box-shadow:0 24px 64px rgba(0,0,0,.6);text-align:center}
+  .login-ico{font-size:52px;margin-bottom:16px}
+  .login-title{font-size:22px;font-weight:800;margin-bottom:6px}
+  .login-sub{font-size:13px;color:#64748b;margin-bottom:28px}
+  .pw-field{width:100%;padding:13px 16px;border:1.5px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.06);color:#f1f0ff;font-size:14px;outline:none;margin-bottom:12px;display:block}
+  .pw-field:focus{border-color:rgba(167,139,250,.6)}
+  .pw-field::placeholder{color:rgba(255,255,255,.3)}
+  .btn-primary{width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:filter .2s}
+  .btn-primary:hover{filter:brightness(1.1)}
+  .login-err{color:#f87171;font-size:13px;margin-top:12px;min-height:18px}
+  /* 대시보드 */
+  .dashboard{display:none;flex-direction:column;min-height:100vh}
+  .topbar{background:rgba(15,15,25,.95);border-bottom:1px solid rgba(255,255,255,.08);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+  .topbar-title{font-size:16px;font-weight:800;color:#c4b5fd}
+  .topbar-right{display:flex;gap:8px}
+  .tbtn{padding:7px 14px;border:none;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+  .tbtn.pw{background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.3)}
+  .tbtn.logout{background:rgba(255,255,255,.07);color:#94a3b8;border:1px solid rgba(255,255,255,.1)}
+  .tbtn:hover{filter:brightness(1.15)}
+  .tab-bar{display:flex;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08);padding:0 20px}
+  .tab{padding:14px 20px;border:none;background:none;color:#64748b;font-size:14px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;margin-bottom:-1px}
+  .tab.active{color:#a78bfa;border-bottom-color:#a78bfa}
+  .tab-content{display:none;padding:24px 20px;max-width:540px;margin:0 auto;width:100%}
+  .tab-content.active{display:block}
+  /* 데이터 로딩 배너 */
+  .data-banner{background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:10px 16px;font-size:13px;color:#a78bfa;margin-bottom:16px;display:none}
+  .section{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:20px;margin-bottom:16px}
+  .section-title{font-size:13px;font-weight:700;color:#94a3b8;margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px}
+  .prof-row{display:flex;align-items:center;gap:14px}
+  .prof-photo-wrap{width:72px;height:72px;border-radius:50%;background:rgba(167,139,250,.15);border:2px dashed rgba(167,139,250,.4);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;flex-shrink:0;transition:all .2s}
+  .prof-photo-wrap:hover{border-color:rgba(167,139,250,.8);background:rgba(167,139,250,.25)}
+  .prof-photo-wrap img{width:100%;height:100%;object-fit:cover}
+  .prof-photo-icon{font-size:26px;pointer-events:none}
+  .prof-info{flex:1}
+  .prof-name{font-size:17px;font-weight:700}
+  .prof-bio{font-size:13px;color:#94a3b8;margin-top:4px}
+  .prof-edit-btn{background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.3);color:#a78bfa;padding:6px 14px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer}
+  .action-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .abtn{padding:9px 16px;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:filter .15s}
+  .abtn.folder{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff}
+  .abtn.link{background:linear-gradient(135deg,#059669,#34d399);color:#fff}
+  .abtn:hover{filter:brightness(1.1)}
+  .bc-bar{display:flex;align-items:center;flex-wrap:wrap;gap:4px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;margin-bottom:10px}
+  .bc{color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;transition:color .15s}
+  .bc:hover{color:#a78bfa}
+  .bc.cur{color:#c4b5fd;font-weight:700;cursor:default}
+  .bc-sep{color:rgba(255,255,255,.25);font-size:12px}
+  .back-btn{display:inline-flex;align-items:center;gap:8px;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.25);color:#a78bfa;padding:8px 14px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;margin-bottom:12px}
+  .items{display:flex;flex-direction:column;gap:8px}
+  .irow{display:flex;gap:8px;align-items:stretch}
+  .card{flex:1;display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 16px;color:#fff;position:relative;overflow:hidden;text-align:left}
+  .card.lk::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(5,150,105,.08),transparent);pointer-events:none}
+  .c-icon{font-size:20px;flex-shrink:0;position:relative;z-index:1}
+  .c-title{flex:1;font-size:14px;font-weight:600;position:relative;z-index:1}
+  .c-url{font-size:11px;color:#64748b;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+  .c-arr{font-size:18px;color:rgba(255,255,255,.4);position:relative;z-index:1}
+  .c-tag{font-size:11px;background:rgba(52,211,153,.15);color:#34d399;border:1px solid rgba(52,211,153,.25);border-radius:6px;padding:2px 8px;flex-shrink:0;position:relative;z-index:1}
+  .ctrl-col{display:flex;flex-direction:column;gap:4px;justify-content:center}
+  .cbtn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#94a3b8;cursor:pointer;font-size:13px;transition:all .15s}
+  .cbtn:hover{background:rgba(255,255,255,.14);color:#fff}
+  .cbtn.del{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.25);color:#f87171}
+  .cbtn.del:hover{background:rgba(239,68,68,.25)}
+  .ecrd{flex:1;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.3);border-radius:14px;padding:12px 14px}
+  .ei{width:100%;padding:9px 12px;border:1.5px solid rgba(255,255,255,.12);border-radius:10px;background:rgba(255,255,255,.07);color:#f1f0ff;font-size:13px;outline:none;margin-bottom:8px;display:block}
+  .ei:focus{border-color:rgba(167,139,250,.6)}
+  .ei::placeholder{color:rgba(255,255,255,.3)}
+  .ebtn-row{display:flex;gap:8px}
+  .ebtn{flex:1;padding:9px;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer}
+  .ebtn.ok{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff}
+  .ebtn.cancel{background:rgba(255,255,255,.08);color:#94a3b8}
+  .empty{text-align:center;color:rgba(255,255,255,.3);padding:40px 0;font-size:14px}
+  .stat-card{background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.3);border-radius:20px;padding:24px;margin-bottom:20px;text-align:center}
+  .stat-label{font-size:13px;color:#94a3b8;margin-bottom:8px}
+  .stat-value{font-size:52px;font-weight:900;color:#a78bfa;line-height:1}
+  .stat-hint{font-size:11px;color:#4b5563;margin-top:8px}
+  .an-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .an-title{font-size:14px;font-weight:700;color:#e2e8f0}
+  .reset-btn{background:none;border:1px solid rgba(239,68,68,.3);color:#f87171;padding:5px 14px;border-radius:20px;font-size:11px;cursor:pointer}
+  .depth-tabs{display:flex;gap:6px;margin-bottom:12px;background:rgba(255,255,255,.04);border-radius:10px;padding:4px}
+  .dtab{flex:1;padding:7px;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;color:#4b5563;background:none;transition:all .2s}
+  .dtab.active{background:rgba(167,139,250,.2);color:#c4b5fd}
+  .chart-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px}
+  .bar-row{display:grid;grid-template-columns:minmax(80px,38%) 1fr 36px;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+  .bar-row:last-child{border-bottom:none}
+  .bar-label-wrap{min-width:0}
+  .bar-name{display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar-sub{display:block;font-size:11px;color:#4b5563;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+  .bar-track{background:rgba(255,255,255,.07);border-radius:4px;height:10px;overflow:hidden;min-width:20px}
+  .bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#7c3aed,#a78bfa);width:0%;transition:width .4s cubic-bezier(.4,0,.2,1)}
+  .bar-count{font-size:13px;font-weight:700;color:#c4b5fd;text-align:right}
+  .no-data{text-align:center;color:rgba(255,255,255,.25);padding:36px 0;font-size:13px;line-height:1.7}
+  .toast{position:fixed;bottom:24px;right:24px;color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;font-weight:600;pointer-events:none;opacity:0;transition:opacity .4s,transform .4s;transform:translateY(6px);z-index:500}
+  .toast.show{opacity:1;transform:translateY(0)}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:300;padding:20px;backdrop-filter:blur(6px)}
+  .overlay.hidden{display:none}
+  .modal{background:#16161f;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;width:100%;max-width:380px;box-shadow:0 24px 64px rgba(0,0,0,.6)}
+  .modal h3{font-size:18px;font-weight:700;margin-bottom:20px}
+  .mi{width:100%;padding:13px 16px;border:1.5px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.06);color:#f1f0ff;font-size:14px;outline:none;margin-bottom:10px;display:block}
+  .mi:focus{border-color:rgba(167,139,250,.6)}
+  .mi::placeholder{color:rgba(255,255,255,.3)}
+  .mbtn{flex:1;padding:12px;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;transition:filter .15s}
+  .mbtn.ok{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff}
+  .mbtn.ok:hover{filter:brightness(1.1)}
+  .mbtn.cancel{background:rgba(255,255,255,.07);color:#94a3b8;border:1px solid rgba(255,255,255,.1)}
+  .mrow{display:flex;gap:8px;margin-top:4px}
+  .merr{color:#f87171;font-size:13px;margin-bottom:10px}
+  .mhint{font-size:12px;color:#64748b;margin-bottom:12px;line-height:1.5}
+  </style>
+</head>
+<body>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDDhxlDbuLeH2Xnu1rui6ZThReFg0s9M6w",
+  authDomain: "k-ape-99b00.firebaseapp.com",
+  projectId: "k-ape-99b00",
+  storageBucket: "k-ape-99b00.firebasestorage.app",
+  messagingSenderId: "889115108406",
+  appId: "1:889115108406:web:546f5f5f4c2e6bd873a497"
+};
+const ADMIN_PW_DEFAULT = "admin1234";
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+<!-- 로그인 화면 (처음부터 바로 표시) -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-box">
+    <div class="login-ico">🛠</div>
+    <div class="login-title">관리자 로그인</div>
+    <div class="login-sub">비밀번호를 입력해주세요</div>
+    <input class="pw-field" id="pw-input" type="password" placeholder="비밀번호" autofocus/>
+    <button class="btn-primary" id="login-btn">로그인</button>
+    <div class="login-err" id="pw-err"></div>
+  </div>
+</div>
+
+<!-- 대시보드 -->
+<div class="dashboard" id="dashboard">
+  <div class="topbar">
+    <div class="topbar-title">🛠 관리자 대시보드</div>
+    <div class="topbar-right">
+      <button class="tbtn pw"     id="pw-change-btn">🔑 비밀번호</button>
+      <button class="tbtn logout" id="logout-btn">로그아웃</button>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab active" data-tab="links">🔗 링크 관리</button>
+    <button class="tab"        data-tab="analytics">📊 통계</button>
+  </div>
+  <div class="tab-content active" id="tab-links">
+    <div class="data-banner" id="data-banner">⏳ Firebase에서 데이터 불러오는 중…</div>
+    <div class="section">
+      <div class="section-title">프로필</div>
+      <div class="prof-row">
+        <div class="prof-photo-wrap" id="prof-photo-wrap" title="클릭해서 사진 변경">
+          <span class="prof-photo-icon" id="prof-photo-icon">📷</span>
+        </div>
+        <div class="prof-info">
+          <div class="prof-name" id="prof-name">홍길동</div>
+          <div class="prof-bio"  id="prof-bio">안녕하세요!</div>
+        </div>
+        <button class="prof-edit-btn" id="prof-edit-btn">✏️ 수정</button>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title" id="loc-title">링크 목록 · 홈</div>
+      <div class="action-row">
+        <button class="abtn folder" id="add-folder-btn">📁 폴더 추가</button>
+        <button class="abtn link"   id="add-link-btn">🔗 링크 추가</button>
+      </div>
+      <div class="bc-bar" id="bc-bar" style="display:none"></div>
+      <button class="back-btn" id="back-btn" style="display:none">← 뒤로</button>
+      <div class="items" id="items"></div>
+    </div>
+  </div>
+  <div class="tab-content" id="tab-analytics">
+    <div class="stat-card">
+      <div class="stat-label">👥 총 방문자 수</div>
+      <div class="stat-value" id="visitor-count">—</div>
+      <div class="stat-hint">페이지가 열릴 때마다 1씩 증가해요</div>
+    </div>
+    <div class="section">
+      <div class="an-head">
+        <div class="an-title">🔗 링크 클릭 통계</div>
+        <button class="reset-btn" id="analytics-reset">🗑 초기화</button>
+      </div>
+      <div class="depth-tabs" id="depth-tabs"></div>
+      <div class="chart-box"><div id="analytics-chart"><div class="no-data">통계 탭을 열면 로딩돼요</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="overlay hidden" id="pw-modal">
+  <div class="modal">
+    <h3>🔑 비밀번호 변경</h3>
+    <input class="mi" id="pw-cur" type="password" placeholder="현재 비밀번호"/>
+    <input class="mi" id="pw-new" type="password" placeholder="새 비밀번호 (4자 이상)"/>
+    <input class="mi" id="pw-con" type="password" placeholder="새 비밀번호 확인"/>
+    <div class="merr" id="pw-modal-err"></div>
+    <p class="mhint">⚠️ 비밀번호는 이 브라우저에 저장돼요.</p>
+    <div class="mrow">
+      <button class="mbtn ok"     id="pw-modal-ok">변경하기</button>
+      <button class="mbtn cancel" id="pw-modal-cancel">취소</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="prof-modal">
+  <div class="modal">
+    <h3>👤 프로필 수정</h3>
+    <input class="mi" id="p-name"  placeholder="이름"/>
+    <input class="mi" id="p-bio"   placeholder="소개글"/>
+    <div style="margin-bottom:12px">
+      <div style="font-size:12px;color:#64748b;margin-bottom:8px">프로필 사진</div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="prof-photo-wrap" id="modal-photo-wrap" style="width:64px;height:64px">
+          <span class="prof-photo-icon" id="modal-photo-icon">📷</span>
+        </div>
+        <div>
+          <button type="button" onclick="document.getElementById('photo-file').click()" style="background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.3);color:#a78bfa;padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">사진 선택</button>
+          <div style="font-size:11px;color:#64748b;margin-top:6px">JPG, PNG 권장 · 자동 압축됨</div>
+        </div>
+      </div>
+      <input type="file" id="photo-file" accept="image/*" style="display:none"/>
+    </div>
+    <div class="mrow">
+      <button class="mbtn ok"     id="prof-ok">저장</button>
+      <button class="mbtn cancel" id="prof-cancel">취소</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="add-modal">
+  <div class="modal">
+    <h3 id="add-modal-title">추가</h3>
+    <input class="mi" id="add-name" placeholder="이름 (예: 📸 포트폴리오)"/>
+    <input class="mi" id="add-url"  placeholder="URL (예: https://instagram.com)" style="display:none"/>
+    <p class="mhint">💡 이름 앞에 이모지를 넣으면 더 예뻐요!</p>
+    <div class="mrow">
+      <button class="mbtn ok"     id="add-ok">추가하기</button>
+      <button class="mbtn cancel" id="add-cancel">취소</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// Firebase 초기화 (실패해도 앱은 정상 동작)
+let db = null;
+try {
+  if (typeof firebase !== 'undefined') {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+  }
+} catch(e) { console.warn('Firebase 초기화 실패:', e); }
+
+// 상태
+let appData = { profile:{name:'홍길동',bio:'안녕하세요!',emoji:'🌟'}, items:[] };
+let navPath=[], editId=null, addType=null, analyticsDepth=1, analyticsData=null;
+
+function getCurrentPw(){ return localStorage.getItem('mylinks_pw')||ADMIN_PW_DEFAULT; }
+function uid(){ return 'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,5); }
+
+function showToast(msg,bg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.background=bg||'rgba(5,150,105,.9)';
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1900);
+}
+function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+
+// 로그인 - Firebase와 무관하게 즉시 동작
+function doLogin(){
+  const val = document.getElementById('pw-input').value;
+  if(val === getCurrentPw()){
+    document.getElementById('login-wrap').style.display='none';
+    document.getElementById('dashboard').style.display='flex';
+    loadFromFirebase(); // 로그인 후에 Firebase 데이터 가져오기
+  } else {
+    document.getElementById('pw-err').textContent='비밀번호가 틀렸습니다.';
+  }
+}
+
+// 로그인 후 Firebase에서 데이터 로드
+async function loadFromFirebase(){
+  if(!db){ renderLinks(); renderProfile(); return; }
+  const banner=document.getElementById('data-banner');
+  banner.style.display='block';
+  try{
+    const doc=await db.collection('site').doc('config').get();
+    if(doc.exists){ appData=doc.data(); if(!appData.items)appData.items=[]; }
+    banner.style.display='none';
+    renderLinks(); renderProfile();
+  }catch(e){
+    banner.textContent='⚠️ Firebase 연결 실패. 변경사항은 이 브라우저에서만 유효해요.';
+    renderLinks(); renderProfile();
+  }
+}
+
+// Firebase 저장
+async function saveToFirebase(){
+  if(!db){ showToast('⚠️ Firebase 미연결 (로컬만 변경됨)','rgba(251,191,36,.9)'); renderLinks(); return; }
+  showToast('저장 중…','rgba(124,58,237,.9)');
+  try{
+    await db.collection('site').doc('config').set({profile:appData.profile,items:appData.items});
+    showToast('✓ 저장됨');
+  }catch(e){ showToast('❌ 저장 실패','rgba(239,68,68,.9)'); }
+}
+
+// 아이템 헬퍼
+function getAt(){
+  let items=appData.items||[];
+  for(const p of navPath){const f=items.find(i=>i.id===p.id);items=f?.children||[];}
+  return items;
+}
+function setAt(newItems){
+  if(!navPath.length){appData.items=newItems;saveToFirebase();return;}
+  function upd(items,stk){
+    const[h,...r]=stk;
+    return items.map(i=>{
+      if(i.id!==h.id)return i;
+      if(!r.length)return{...i,children:newItems};
+      return{...i,children:upd(i.children||[],r)};
+    });
+  }
+  appData.items=upd(appData.items,navPath);
+  saveToFirebase();
+}
+function moveItem(id,dir){
+  const cur=getAt(),idx=cur.findIndex(i=>i.id===id);
+  if(dir==='u'&&idx===0||dir==='d'&&idx===cur.length-1)return;
+  const a=[...cur],si=dir==='u'?idx-1:idx+1;
+  [a[idx],a[si]]=[a[si],a[idx]]; setAt(a);
+}
+function deleteItem(id){
+  if(!confirm('삭제할까요?\n폴더는 안의 내용도 모두 삭제됩니다.'))return;
+  setAt(getAt().filter(i=>i.id!==id));
+}
+
+// 렌더
+function renderLinks(){
+  renderBc();
+  const cur=getAt();
+  document.getElementById('back-btn').style.display=navPath.length?'inline-flex':'none';
+  document.getElementById('loc-title').textContent='링크 목록 · '+(navPath.length?navPath[navPath.length-1].title:'홈');
+  const cont=document.getElementById('items'); cont.innerHTML='';
+  if(!cur.length){
+    const e=document.createElement('div');e.className='empty';
+    e.textContent='📂 위에서 폴더나 링크를 추가해보세요!';
+    cont.appendChild(e);return;
+  }
+  cur.forEach(item=>{
+    const row=document.createElement('div');row.className='irow';
+    if(editId===item.id){
+      const ecrd=document.createElement('div');ecrd.className='ecrd';
+      const ti=document.createElement('input');ti.className='ei';ti.value=item.title;ti.placeholder='제목';
+      const brow=document.createElement('div');brow.className='ebtn-row';
+      if(item.type==='link'){
+        const ui=document.createElement('input');ui.className='ei';ui.value=item.url||'';ui.placeholder='URL';
+        const ok=mkbtn('ebtn ok','저장',()=>{setAt(getAt().map(i=>i.id!==item.id?i:{...i,title:ti.value.trim(),url:ui.value.trim()}));editId=null;});
+        const cl=mkbtn('ebtn cancel','취소',()=>{editId=null;renderLinks();});
+        ecrd.appendChild(ti);ecrd.appendChild(ui);brow.appendChild(ok);brow.appendChild(cl);
+      }else{
+        const ok=mkbtn('ebtn ok','저장',()=>{setAt(getAt().map(i=>i.id!==item.id?i:{...i,title:ti.value.trim()}));editId=null;});
+        const cl=mkbtn('ebtn cancel','취소',()=>{editId=null;renderLinks();});
+        ecrd.appendChild(ti);brow.appendChild(ok);brow.appendChild(cl);
+      }
+      ecrd.appendChild(brow);row.appendChild(ecrd);
+    }else{
+      const card=document.createElement('div');
+      card.className='card'+(item.type==='link'?' lk':'');
+      if(item.type==='folder') card.onclick=()=>{navPath=[...navPath,{id:item.id,title:item.title}];editId=null;renderLinks();};
+      const icon=document.createElement('span');icon.className='c-icon';icon.textContent=item.type==='folder'?'📁':'🔗';
+      const tw=document.createElement('div');tw.style.cssText='flex:1;min-width:0';
+      const tt=document.createElement('span');tt.className='c-title';tt.textContent=item.title;tw.appendChild(tt);
+      if(item.type==='link'&&item.url){const ul=document.createElement('div');ul.className='c-url';ul.textContent=item.url;tw.appendChild(ul);}
+      card.appendChild(icon);card.appendChild(tw);
+      if(item.type==='folder'){const a=document.createElement('span');a.className='c-arr';a.textContent='›';card.appendChild(a);}
+      else{const t=document.createElement('span');t.className='c-tag';t.textContent='링크';card.appendChild(t);}
+      row.appendChild(card);
+      const cc=document.createElement('div');cc.className='ctrl-col';
+      cc.appendChild(mkctrl('↑','',()=>moveItem(item.id,'u')));
+      cc.appendChild(mkctrl('✏','',()=>{editId=item.id;renderLinks();}));
+      cc.appendChild(mkctrl('✕',' del',()=>deleteItem(item.id)));
+      cc.appendChild(mkctrl('↓','',()=>moveItem(item.id,'d')));
+      row.appendChild(cc);
+    }
+    cont.appendChild(row);
+  });
+}
+function renderBc(){
+  const crumbs=[{label:'🏠 홈',n:0},...navPath.map((x,i)=>({label:x.title,n:i+1}))];
+  const bar=document.getElementById('bc-bar');
+  if(!navPath.length){bar.style.display='none';return;}
+  bar.style.display='flex';bar.innerHTML='';
+  crumbs.forEach((c,i)=>{
+    if(i>0){const s=document.createElement('span');s.className='bc-sep';s.textContent='›';bar.appendChild(s);}
+    const el=document.createElement('span');
+    el.className='bc'+(i===crumbs.length-1?' cur':'');
+    el.textContent=c.label;
+    if(i<crumbs.length-1) el.onclick=()=>{navPath=navPath.slice(0,c.n);editId=null;renderLinks();};
+    bar.appendChild(el);
+  });
+}
+function renderProfile(){
+  const p=appData.profile||{};
+  const wrap=document.getElementById('prof-photo-wrap');
+  const icon=document.getElementById('prof-photo-icon');
+  if(p.photo){
+    wrap.innerHTML=`<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  }else{
+    wrap.innerHTML='<span class="prof-photo-icon">📷</span>';
+  }
+  document.getElementById('prof-name').textContent=p.name||'';
+  document.getElementById('prof-bio').textContent=p.bio||'';
+}
+function mkbtn(cls,txt,fn){const b=document.createElement('button');b.className=cls;b.textContent=txt;b.onclick=fn;return b;}
+function mkctrl(txt,extra,fn){const b=document.createElement('button');b.className='cbtn'+extra;b.textContent=txt;b.onclick=fn;return b;}
+
+// 통계
+async function loadAnalytics(){
+  if(!db){document.getElementById('visitor-count').textContent='미연결';return;}
+  document.getElementById('visitor-count').textContent='로딩 중…';
+  try{
+    const[s,c]=await Promise.all([
+      db.collection('analytics').doc('summary').get(),
+      db.collection('analytics').doc('clicks').get()
+    ]);
+    document.getElementById('visitor-count').textContent=(s.data()?.visitors||0).toLocaleString();
+    analyticsData=c.data()||{};
+    renderDepthTabs();
+  }catch(e){
+    document.getElementById('visitor-count').textContent='오류';
+    document.getElementById('analytics-chart').innerHTML='<div class="no-data">Firebase 연결 오류</div>';
+  }
+}
+function getMaxDepth(){
+  if(!analyticsData)return 1;
+  let max=1;
+  for(const d of Object.values(analyticsData)){const depth=(d.pathLabels||[d.title]).length;if(depth>max)max=depth;}
+  return max;
+}
+function getGroupedData(depth){
+  if(!analyticsData)return[];
+  const groups={};
+  for(const data of Object.values(analyticsData)){
+    const pl=data.pathLabels||[data.title];
+    if(pl.length<depth)continue;
+    const key=pl.slice(0,depth).join('\x00');
+    if(!groups[key])groups[key]={label:pl[depth-1],sub:depth>1?pl.slice(0,depth-1).join(' › '):null,count:0};
+    groups[key].count+=data.count||0;
+  }
+  return Object.values(groups).sort((a,b)=>b.count-a.count);
+}
+function renderDepthTabs(){
+  const maxD=getMaxDepth();
+  const el=document.getElementById('depth-tabs');el.innerHTML='';
+  for(let d=1;d<=maxD;d++){
+    const btn=document.createElement('button');
+    btn.className='dtab'+(d===analyticsDepth?' active':'');
+    btn.textContent=d+'단계';
+    const depth=d;
+    btn.onclick=()=>{analyticsDepth=depth;document.querySelectorAll('.dtab').forEach((t,i)=>t.classList.toggle('active',i+1===depth));renderChart(depth);};
+    el.appendChild(btn);
+  }
+  if(analyticsDepth>maxD)analyticsDepth=1;
+  renderChart(analyticsDepth);
+}
+function renderChart(depth){
+  const cont=document.getElementById('analytics-chart'),data=getGroupedData(depth);
+  cont.innerHTML='';
+  if(!data.length){const nd=document.createElement('div');nd.className='no-data';nd.innerHTML='아직 클릭 데이터가 없어요.<br>방문자가 링크를 클릭하면 여기에 집계돼요!';cont.appendChild(nd);return;}
+  const max=Math.max(...data.map(d=>d.count),1);
+  data.forEach(item=>{
+    const row=document.createElement('div');row.className='bar-row';
+    const lw=document.createElement('div');lw.className='bar-label-wrap';
+    const nm=document.createElement('span');nm.className='bar-name';nm.textContent=item.label;nm.title=item.label;lw.appendChild(nm);
+    if(item.sub){const sub=document.createElement('span');sub.className='bar-sub';sub.textContent=item.sub;lw.appendChild(sub);}
+    const track=document.createElement('div');track.className='bar-track';
+    const fill=document.createElement('div');fill.className='bar-fill';fill.style.width='0%';track.appendChild(fill);
+    const cnt=document.createElement('span');cnt.className='bar-count';cnt.textContent=item.count;
+    row.appendChild(lw);row.appendChild(track);row.appendChild(cnt);cont.appendChild(row);
+    requestAnimationFrame(()=>setTimeout(()=>{fill.style.width=Math.round(item.count/max*100)+'%';},30));
+  });
+}
+
+// 이벤트
+document.getElementById('login-btn').onclick=doLogin;
+document.getElementById('pw-input').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+document.getElementById('logout-btn').onclick=()=>{
+  document.getElementById('dashboard').style.display='none';
+  document.getElementById('login-wrap').style.display='flex';
+  document.getElementById('pw-input').value='';
+  document.getElementById('pw-err').textContent='';
+  setTimeout(()=>document.getElementById('pw-input').focus(),100);
+};
+
+document.querySelectorAll('.tab-bar .tab').forEach(tab=>{
+  tab.onclick=()=>{
+    document.querySelectorAll('.tab-bar .tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-'+tab.dataset.tab).classList.add('active');
+    if(tab.dataset.tab==='analytics')loadAnalytics();
+  };
+});
+
+document.getElementById('pw-change-btn').onclick=()=>{
+  ['pw-cur','pw-new','pw-con'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pw-modal-err').textContent='';
+  openModal('pw-modal');
+  setTimeout(()=>document.getElementById('pw-cur').focus(),100);
+};
+const doChangePw=()=>{
+  const cur=document.getElementById('pw-cur').value,nw=document.getElementById('pw-new').value,con=document.getElementById('pw-con').value;
+  const err=document.getElementById('pw-modal-err');
+  if(cur!==getCurrentPw()){err.textContent='현재 비밀번호가 맞지 않아요.';return;}
+  if(nw.length<4){err.textContent='4자 이상으로 설정해주세요.';return;}
+  if(nw!==con){err.textContent='새 비밀번호가 서로 달라요.';return;}
+  localStorage.setItem('mylinks_pw',nw);
+  closeModal('pw-modal');
+  showToast('🔑 비밀번호 변경됨!','rgba(124,58,237,.9)');
+};
+document.getElementById('pw-modal-ok').onclick=doChangePw;
+document.getElementById('pw-modal-cancel').onclick=()=>closeModal('pw-modal');
+document.getElementById('pw-modal').onclick=e=>{if(e.target===e.currentTarget)closeModal('pw-modal');};
+document.getElementById('pw-con').addEventListener('keydown',e=>{if(e.key==='Enter')doChangePw();});
+
+// Photo compression helper
+async function compressPhoto(file){
+  return new Promise(resolve=>{
+    const img=new Image();
+    const url=URL.createObjectURL(file);
+    img.onload=()=>{
+      const max=200;
+      const ratio=Math.min(max/img.width,max/img.height,1);
+      const canvas=document.createElement('canvas');
+      canvas.width=Math.round(img.width*ratio);
+      canvas.height=Math.round(img.height*ratio);
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL('image/jpeg',0.8));
+    };
+    img.src=url;
+  });
+}
+
+let pendingPhoto=null;
+
+document.getElementById('prof-edit-btn').onclick=()=>{
+  const p=appData.profile||{};
+  document.getElementById('p-name').value=p.name||'';
+  document.getElementById('p-bio').value=p.bio||'';
+  pendingPhoto=null;
+  // 모달 사진 미리보기 초기화
+  const mw=document.getElementById('modal-photo-wrap');
+  if(p.photo){
+    mw.innerHTML=`<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  }else{
+    mw.innerHTML='<span class="prof-photo-icon">📷</span>';
+  }
+  openModal('prof-modal');
+  setTimeout(()=>document.getElementById('p-name').focus(),100);
+};
+
+document.getElementById('photo-file').onchange=async(e)=>{
+  const file=e.target.files[0];
+  if(!file)return;
+  try{
+    const compressed=await compressPhoto(file);
+    pendingPhoto=compressed;
+    const mw=document.getElementById('modal-photo-wrap');
+    mw.innerHTML=`<img src="${compressed}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  }catch(err){console.error(err);}
+};
+document.getElementById('prof-ok').onclick=()=>{
+  appData.profile={
+    name:document.getElementById('p-name').value.trim()||appData.profile?.name||'',
+    bio:document.getElementById('p-bio').value.trim(),
+    emoji:appData.profile?.emoji||'🌟',
+    photo:pendingPhoto!==null?pendingPhoto:(appData.profile?.photo||null)
+  };
+  closeModal('prof-modal'); renderProfile(); saveToFirebase();
+};
+document.getElementById('prof-cancel').onclick=()=>closeModal('prof-modal');
+document.getElementById('prof-modal').onclick=e=>{if(e.target===e.currentTarget)closeModal('prof-modal');};
+
+document.getElementById('add-folder-btn').onclick=()=>{
+  addType='folder';
+  document.getElementById('add-modal-title').textContent='📁 폴더 추가';
+  document.getElementById('add-name').value='';
+  document.getElementById('add-url').style.display='none';
+  openModal('add-modal');
+  setTimeout(()=>document.getElementById('add-name').focus(),100);
+};
+document.getElementById('add-link-btn').onclick=()=>{
+  addType='link';
+  document.getElementById('add-modal-title').textContent='🔗 링크 추가';
+  document.getElementById('add-name').value='';
+  document.getElementById('add-url').value='';
+  document.getElementById('add-url').style.display='block';
+  openModal('add-modal');
+  setTimeout(()=>document.getElementById('add-name').focus(),100);
+};
+const doAdd=()=>{
+  const name=document.getElementById('add-name').value.trim(),url=document.getElementById('add-url').value.trim();
+  if(!name)return;
+  setAt([...getAt(),addType==='folder'?{id:uid(),type:'folder',title:name,children:[]}:{id:uid(),type:'link',title:name,url}]);
+  closeModal('add-modal');
+};
+document.getElementById('add-ok').onclick=doAdd;
+document.getElementById('add-cancel').onclick=()=>closeModal('add-modal');
+document.getElementById('add-modal').onclick=e=>{if(e.target===e.currentTarget)closeModal('add-modal');};
+document.getElementById('add-url').addEventListener('keydown',e=>{if(e.key==='Enter')doAdd();});
+
+document.getElementById('back-btn').onclick=()=>{navPath=navPath.slice(0,-1);editId=null;renderLinks();};
+
+document.getElementById('analytics-reset').onclick=async()=>{
+  if(!confirm('방문자 수와 클릭 통계를 모두 초기화할까요?'))return;
+  if(!db){showToast('Firebase 미연결','rgba(239,68,68,.9)');return;}
+  try{
+    await db.collection('analytics').doc('summary').set({visitors:0});
+    await db.collection('analytics').doc('clicks').set({});
+    analyticsData={};
+    document.getElementById('visitor-count').textContent='0';
+    renderDepthTabs();
+    showToast('🗑 통계 초기화됨','rgba(239,68,68,.85)');
+  }catch(e){showToast('❌ 초기화 실패','rgba(239,68,68,.9)');}
+};
+</script>
+</body>
+</html>
