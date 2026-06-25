@@ -130,11 +130,12 @@ const firebaseConfig = {
   messagingSenderId: "889115108406",
   appId:             "1:889115108406:web:546f5f5f4c2e6bd873a497"
 };
-const ADMIN_PW_DEFAULT = "admin1234";
+// 비밀번호는 Firebase Authentication에서 관리 (소스코드에 없음)
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
 <!-- 로그인 화면 (처음부터 바로 표시) -->
 <div class="login-wrap" id="login-wrap">
@@ -142,7 +143,8 @@ const ADMIN_PW_DEFAULT = "admin1234";
     <div class="login-ico">🛠</div>
     <div class="login-title">관리자 로그인</div>
     <div class="login-sub">비밀번호를 입력해주세요</div>
-    <input class="pw-field" id="pw-input" type="password" placeholder="비밀번호" autofocus/>
+    <input class="pw-field" id="email-input" type="email" placeholder="이메일" autofocus/>
+    <input class="pw-field" id="pw-input" type="password" placeholder="비밀번호"/>
     <button class="btn-primary" id="login-btn">로그인</button>
     <div class="login-err" id="pw-err"></div>
   </div>
@@ -209,11 +211,11 @@ const ADMIN_PW_DEFAULT = "admin1234";
 <div class="overlay hidden" id="pw-modal">
   <div class="modal">
     <h3>🔑 비밀번호 변경</h3>
-    <input class="mi" id="pw-cur" type="password" placeholder="현재 비밀번호"/>
-    <input class="mi" id="pw-new" type="password" placeholder="새 비밀번호 (4자 이상)"/>
+    <input class="mi" id="pw-cur" type="password" placeholder="현재 비밀번호 (재확인용)"/>
+    <input class="mi" id="pw-new" type="password" placeholder="새 비밀번호 (6자 이상)"/>
     <input class="mi" id="pw-con" type="password" placeholder="새 비밀번호 확인"/>
     <div class="merr" id="pw-modal-err"></div>
-    <p class="mhint">⚠️ 비밀번호는 이 브라우저에 저장돼요.</p>
+    <p class="mhint">✅ 비밀번호는 Firebase에 안전하게 저장돼요. 소스코드에 노출되지 않아요.</p>
     <div class="mrow">
       <button class="mbtn ok"     id="pw-modal-ok">변경하기</button>
       <button class="mbtn cancel" id="pw-modal-cancel">취소</button>
@@ -263,11 +265,14 @@ const ADMIN_PW_DEFAULT = "admin1234";
 'use strict';
 
 // Firebase 초기화 (실패해도 앱은 정상 동작)
-let db = null;
+let db = null, auth = null;
 try {
   if (typeof firebase !== 'undefined') {
     firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
+    auth = firebase.auth();
+    // 로그인 상태 유지
+    auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
   }
 } catch(e) { console.warn('Firebase 초기화 실패:', e); }
 
@@ -275,7 +280,6 @@ try {
 let appData = { profile:{name:'홍길동',bio:'안녕하세요!',emoji:'🌟'}, items:[] };
 let navPath=[], editId=null, addType=null, analyticsDepth=1, analyticsData=null;
 
-function getCurrentPw(){ return localStorage.getItem('mylinks_pw')||ADMIN_PW_DEFAULT; }
 function uid(){ return 'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,5); }
 
 function showToast(msg,bg){
@@ -286,15 +290,21 @@ function showToast(msg,bg){
 function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
 function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
 
-// 로그인 - Firebase와 무관하게 즉시 동작
-function doLogin(){
-  const val = document.getElementById('pw-input').value;
-  if(val === getCurrentPw()){
-    document.getElementById('login-wrap').style.display='none';
-    document.getElementById('dashboard').style.display='flex';
-    loadFromFirebase(); // 로그인 후에 Firebase 데이터 가져오기
-  } else {
-    document.getElementById('pw-err').textContent='비밀번호가 틀렸습니다.';
+// 로그인 - Firebase Authentication 사용
+async function doLogin(){
+  if(!auth){ document.getElementById('pw-err').textContent='Firebase 연결 실패. 새로고침해주세요.'; return; }
+  const email = document.getElementById('email-input').value.trim();
+  const pw    = document.getElementById('pw-input').value;
+  const errEl = document.getElementById('pw-err');
+  if(!email || !pw){ errEl.textContent='이메일과 비밀번호를 입력해주세요.'; return; }
+  errEl.textContent='로그인 중…';
+  try {
+    await auth.signInWithEmailAndPassword(email, pw);
+    // onAuthStateChanged가 대시보드 전환 처리
+  } catch(e) {
+    const msg = e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential'
+      ? '이메일 또는 비밀번호가 틀렸습니다.' : '로그인 오류: ' + e.message;
+    errEl.textContent = msg;
   }
 }
 
@@ -504,13 +514,31 @@ function renderChart(depth){
 // 이벤트
 document.getElementById('login-btn').onclick=doLogin;
 document.getElementById('pw-input').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('email-input').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('pw-input').focus();});
 
-document.getElementById('logout-btn').onclick=()=>{
+// Firebase Auth 상태 감지 (자동 로그인/로그아웃)
+if(auth){
+  auth.onAuthStateChanged(user=>{
+    if(user){
+      document.getElementById('login-wrap').style.display='none';
+      document.getElementById('dashboard').style.display='flex';
+      loadFromFirebase();
+    } else {
+      document.getElementById('dashboard').style.display='none';
+      document.getElementById('login-wrap').style.display='flex';
+      setTimeout(()=>document.getElementById('email-input').focus(),200);
+    }
+  });
+}
+
+document.getElementById('logout-btn').onclick=async()=>{
+  if(auth) await auth.signOut();
   document.getElementById('dashboard').style.display='none';
   document.getElementById('login-wrap').style.display='flex';
+  document.getElementById('email-input').value='';
   document.getElementById('pw-input').value='';
   document.getElementById('pw-err').textContent='';
-  setTimeout(()=>document.getElementById('pw-input').focus(),100);
+  setTimeout(()=>document.getElementById('email-input').focus(),100);
 };
 
 document.querySelectorAll('.tab-bar .tab').forEach(tab=>{
@@ -529,15 +557,29 @@ document.getElementById('pw-change-btn').onclick=()=>{
   openModal('pw-modal');
   setTimeout(()=>document.getElementById('pw-cur').focus(),100);
 };
-const doChangePw=()=>{
-  const cur=document.getElementById('pw-cur').value,nw=document.getElementById('pw-new').value,con=document.getElementById('pw-con').value;
+const doChangePw=async()=>{
+  const cur=document.getElementById('pw-cur').value;
+  const nw=document.getElementById('pw-new').value;
+  const con=document.getElementById('pw-con').value;
   const err=document.getElementById('pw-modal-err');
-  if(cur!==getCurrentPw()){err.textContent='현재 비밀번호가 맞지 않아요.';return;}
-  if(nw.length<4){err.textContent='4자 이상으로 설정해주세요.';return;}
+  if(!cur){err.textContent='현재 비밀번호를 입력해주세요.';return;}
+  if(nw.length<6){err.textContent='새 비밀번호는 6자 이상이어야 해요.';return;}
   if(nw!==con){err.textContent='새 비밀번호가 서로 달라요.';return;}
-  localStorage.setItem('mylinks_pw',nw);
-  closeModal('pw-modal');
-  showToast('🔑 비밀번호 변경됨!','rgba(124,58,237,.9)');
+  err.textContent='변경 중…';
+  try{
+    const user=auth.currentUser;
+    const email=user.email;
+    // 재인증 후 비밀번호 변경
+    const cred=firebase.auth.EmailAuthProvider.credential(email,cur);
+    await user.reauthenticateWithCredential(cred);
+    await user.updatePassword(nw);
+    closeModal('pw-modal');
+    showToast('🔑 비밀번호 변경됨!','rgba(124,58,237,.9)');
+  }catch(e){
+    const msg=e.code==='auth/wrong-password'||e.code==='auth/invalid-credential'
+      ?'현재 비밀번호가 맞지 않아요.':'오류: '+e.message;
+    err.textContent=msg;
+  }
 };
 document.getElementById('pw-modal-ok').onclick=doChangePw;
 document.getElementById('pw-modal-cancel').onclick=()=>closeModal('pw-modal');
